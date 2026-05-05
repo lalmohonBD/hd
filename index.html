@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>রিটেইলার পোর্টাল</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #1a56db;
+      --primary-dark: #1342a8;
+      --primary-light: #eff6ff;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --success-light: #d1fae5;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --warning: #f59e0b;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 2px 16px rgba(30,41,59,0.08);
+      --shadow-lg: 0 8px 32px rgba(30,41,59,0.14);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Hind Siliguri', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; min-height: 100dvh; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* ── LOGIN ── */
+    #loginScreen {
+      background: linear-gradient(160deg, #dbeafe 0%, #eff6ff 50%, #fef9ec 100%);
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeUp 0.5s ease;
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo-icon {
+      width: 76px; height: 76px;
+      background: linear-gradient(135deg, #1a56db, #60a5fa);
+      border-radius: 22px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      box-shadow: 0 10px 30px rgba(26,86,219,0.35);
+    }
+
+    .logo-icon svg { width: 38px; height: 38px; }
+
+    .login-title {
+      font-size: 1.9rem; font-weight: 700;
+      color: var(--text); line-height: 1.2;
+    }
+
+    .login-sub {
+      color: var(--text-muted); font-size: 0.95rem; margin-top: 0.4rem;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 22px;
+      box-shadow: var(--shadow-lg);
+      padding: 1.75rem;
+    }
+
+    .form-group { margin-bottom: 1.1rem; }
+
+    .form-label {
+      display: block; margin-bottom: 6px;
+      font-size: 0.85rem; font-weight: 600; color: #374151;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      font-family: 'Hind Siliguri', sans-serif;
+      font-size: 1rem; color: var(--text);
+      background: #f8fafc;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+    }
+
+    select.form-input { appearance: none; cursor: pointer; }
+
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      width: 100%; padding: 0.9rem 1.5rem;
+      border-radius: 14px; border: none; cursor: pointer;
+      font-family: 'Hind Siliguri', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      transition: all 0.2s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1a56db, #3b82f6);
+      color: white;
+      box-shadow: 0 4px 16px rgba(26,86,219,0.3);
+    }
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 6px 20px rgba(26,86,219,0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+    }
+    .btn-success:hover:not(:disabled) { transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      box-shadow: none;
+    }
+    .btn-outline:hover:not(:disabled) { background: var(--primary-light); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.2);
+      color: white; border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 10px; width: auto;
+      font-size: 0.85rem;
+    }
+
+    .error-box {
+      background: var(--danger-light);
+      border: 1.5px solid #fecaca;
+      border-radius: 12px;
+      padding: 0.65rem 0.9rem;
+      color: var(--danger);
+      font-size: 0.88rem; font-weight: 500;
+      margin-top: 0.5rem;
+      display: none;
+    }
+    .error-box.show { display: block; }
+
+    /* ── DASHBOARD HEADER ── */
+    .dash-header {
+      background: linear-gradient(135deg, #1a56db, #3b82f6);
+      padding: 1.4rem 1.25rem 3.5rem;
+    }
+    .dash-header-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .dash-header h2 { color: white; font-size: 1.2rem; font-weight: 700; }
+    .dash-header p { color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-top: 2px; }
+    .dash-header .welcome { color: rgba(255,255,255,0.8); font-size: 0.82rem; }
+
+    /* ── DASHBOARD CONTENT ── */
+    .dash-content {
+      padding: 0 1.1rem;
+      margin-top: -2rem;
+      flex: 1;
+      padding-bottom: 2rem;
+    }
+
+    /* ── PROGRESS CARD ── */
+    .progress-card {
+      background: white;
+      border-radius: 22px;
+      box-shadow: var(--shadow-lg);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .month-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.3rem 0.9rem;
+      border-radius: 50px;
+      font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Progress Ring */
+    .ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 1.25rem; }
+    .ring-wrap svg { transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: #e2e8f0; stroke-width: 12; }
+    .ring-fill {
+      fill: none; stroke-width: 12;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1), stroke 0.5s;
+    }
+    .ring-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      line-height: 1.2;
+    }
+    .ring-count { font-size: 2.2rem; font-weight: 700; }
+    .ring-total { font-size: 0.78rem; color: var(--text-muted); }
+    .ring-pct { font-size: 0.72rem; color: #94a3b8; margin-top: 1px; }
+
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .stat-box {
+      background: #f8fafc; border-radius: 14px;
+      padding: 0.85rem; text-align: center;
+      border: 1.5px solid var(--border);
+    }
+    .stat-val { font-size: 1.8rem; font-weight: 700; }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    .target-achieved {
+      background: var(--success-light);
+      border-radius: 12px; padding: 0.65rem;
+      color: #065f46; font-weight: 700;
+      font-size: 0.9rem; margin-top: 1rem;
+      display: none;
+    }
+    .target-achieved.show { display: block; }
+
+
+
+    /* ── ACTION BUTTONS ── */
+    .action-wrap { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    /* ── SUBMIT SCREEN ── */
+    #submitScreen { background: var(--bg); }
+    .submit-header {
+      background: linear-gradient(135deg, #1a56db, #3b82f6);
+      padding: 1.4rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .back-btn {
+      background: rgba(255,255,255,0.2);
+      border: none; border-radius: 12px;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: white; flex-shrink: 0;
+    }
+    .submit-header h2 { color: white; font-size: 1.15rem; font-weight: 700; }
+    .submit-header p { color: rgba(255,255,255,0.7); font-size: 0.8rem; }
+
+    .submit-content { padding: 1.5rem 1.1rem; }
+
+    .hint-text { font-size: 0.78rem; color: #94a3b8; margin-top: 4px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; top: 1rem; left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      padding: 0.7rem 1.4rem;
+      border-radius: 50px;
+      font-weight: 600; font-size: 0.88rem;
+      z-index: 9999; white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      opacity: 0; pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    #toast.success { background: var(--success); color: white; }
+    #toast.error { background: var(--danger); color: white; }
+
+    /* ── SPINNER ── */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    .spinner-dark {
+      border-color: rgba(26,86,219,0.2);
+      border-top-color: var(--primary);
+    }
+
+    /* ── LOADING OVERLAY ── */
+    #loadingOverlay {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(2px);
+      z-index: 999;
+      display: none;
+      align-items: center; justify-content: center;
+    }
+    #loadingOverlay.show { display: flex; }
+    .loading-card {
+      background: white; border-radius: 18px;
+      padding: 1.5rem 2rem;
+      box-shadow: var(--shadow-lg);
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.75rem;
+    }
+    .loading-card .spinner { border-color: rgba(26,86,219,0.2); border-top-color: var(--primary); }
+    .loading-card span { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .fade-up { animation: fadeUp 0.4s ease; }
+
+    /* select arrow */
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: '▾'; position: absolute;
+      right: 1rem; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); pointer-events: none; font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN SCREEN ══════════════ -->
+<div id="loginScreen" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <h1 class="login-title">রিটেইলার পোর্টাল</h1>
+      <p class="login-sub">আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">রিটেইলার আইডি</label>
+        <input id="inputId" class="form-input" type="text" placeholder="আপনার আইডি লিখুন" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">পাসওয়ার্ড</label>
+        <input id="inputPass" class="form-input" type="password" placeholder="পাসওয়ার্ড লিখুন" autocomplete="current-password" />
+      </div>
+      <div id="loginError" class="error-box">⚠️ <span id="loginErrorMsg"></span></div>
+      <div style="margin-top: 1.2rem;">
+        <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">
+          <span>লগইন করুন</span>
+        </button>
+      </div>
+    </div>
+
+    <p style="text-align:center; color:#94a3b8; font-size:0.78rem; margin-top:1.5rem;">
+      © ২০২৬ রিটেইলার ম্যানেজমেন্ট সিস্টেম
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════ DASHBOARD SCREEN ══════════════ -->
+<div id="dashScreen" class="screen">
+  <div class="dash-header">
+    <div class="dash-header-row">
+      <div>
+        <p class="welcome">স্বাগতম,</p>
+        <h2 id="dashName">—</h2>
+        <p id="dashId">ID: —</p>
+      </div>
+      <button class="btn btn-ghost" onclick="handleLogout()">লগআউট</button>
+    </div>
+    <div id="dashAnnounce" style="display:none;margin-top:0.85rem;background:rgba(255,255,255,0.18);border-radius:12px;padding:0.55rem 1rem;font-size:0.9rem;font-weight:600;color:white;text-align:center;"></div>
+  </div>
+
+  <div class="dash-content">
+    <!-- Progress -->
+    <div class="progress-card fade-up">
+      <div class="month-badge" id="monthBadge">—</div>
+      <div class="ring-wrap">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle class="ring-bg" cx="80" cy="80" r="68"/>
+          <circle class="ring-fill" id="ringFill" cx="80" cy="80" r="68"
+            stroke="#1a56db"
+            stroke-dasharray="427.26"
+            stroke-dashoffset="427.26"/>
+        </svg>
+        <div class="ring-center">
+          <span class="ring-count" id="ringCount" style="color:#1a56db">0</span>
+          <span class="ring-total" id="ringTotal">/ 0</span>
+          <span class="ring-pct" id="ringPct">0%</span>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val" id="statSubmitted" style="color:var(--primary)">0</div>
+          <div class="stat-lbl">জমা হয়েছে</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="statRemaining" style="color:var(--warning)">0</div>
+          <div class="stat-lbl">বাকি আছে</div>
+        </div>
+      </div>
+
+      <div class="target-achieved" id="targetAchieved">🎉 লক্ষ্যমাত্রা অর্জিত!</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-wrap fade-up">
+      <button class="btn btn-success" onclick="showSubmit()" style="padding:1rem; font-size:1.05rem;">
+        ➕ নতুন নম্বর জমা দিন
+      </button>
+      <button class="btn btn-outline" id="refreshBtn" onclick="handleRefresh()">
+        🔄 স্ট্যাটাস রিফ্রেশ করুন
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SUBMIT SCREEN ══════════════ -->
+<div id="submitScreen" class="screen">
+  <div class="submit-header">
+    <button class="back-btn" onclick="showDash()">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+    </button>
+    <div>
+      <h2>নম্বর জমা দিন</h2>
+      <p id="submitHeaderName">—</p>
+    </div>
+  </div>
+
+  <div class="submit-content">
+    <div class="card fade-up">
+      <div class="form-group">
+        <label class="form-label">📱 মোবাইল নম্বর (প্রাপ্ত বয়স্ক হতে হবে ১৮+)</label>
+        <input id="inputPhone" class="form-input" type="tel" placeholder="01XXXXXXXXX"
+          maxlength="11" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')" />
+        <p class="hint-text">11 সংখ্যার বাংলাদেশি নম্বর (01 দিয়ে শুরু)</p>
+      </div>
+
+      <div id="brandMessage" style="display:none;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:0.7rem 1rem;margin-bottom:0.75rem;color:#1d4ed8;font-size:0.88rem;font-weight:600;line-height:1.5;"></div>
+
+      <div class="form-group" id="brandGroup">
+        <label class="form-label">🏷️ বর্তমান ভোক্তার ব্রান্ড</label>
+        <div class="select-wrap">
+          <select id="selectBrand" class="form-input"></select>
+        </div>
+      </div>
+
+      <div id="submitError" class="error-box">⚠️ <span id="submitErrorMsg"></span></div>
+
+      <div style="margin-top:1.25rem;">
+        <button class="btn btn-success" id="submitBtn" onclick="handleSubmit()" style="padding:1rem; font-size:1.05rem;">
+          ✅ জমা দিন
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TOAST ══════════════ -->
+<div id="toast"></div>
+
+<!-- ══════════════ LOADING ══════════════ -->
+<div id="loadingOverlay">
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <span id="loadingMsg">অপেক্ষা করুন...</span>
+  </div>
+</div>
+
+<script>
+  // ══════════════════════════════════════════
+  // CONFIG — আপনার Apps Script URL এখানে দিন
+  // ══════════════════════════════════════════
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4HHHtV2RaDE99S0_woWz9P47x1pCUxasg_P1Bud3vGDRIb0gYgyBeKOPwbBDf3bMS/exec';
+
+  // ══════════════════════════════════════════
+  // STATE
+  // ══════════════════════════════════════════
+  let currentRetailer = null;
+  let currentCount = 0;
+
+  // ══════════════════════════════════════════
+  // SCREEN NAVIGATION
+  // ══════════════════════════════════════════
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function showDash() { showScreen('dashScreen'); }
+  function showSubmit() {
+    document.getElementById('submitHeaderName').textContent = currentRetailer?.name || '';
+    document.getElementById('inputPhone').value = '';
+    hideError('submitError');
+    showScreen('submitScreen');
+  }
+
+  // ══════════════════════════════════════════
+  // LOADING & TOAST
+  // ══════════════════════════════════════════
+  function setLoading(show, msg = 'অপেক্ষা করুন...') {
+    document.getElementById('loadingMsg').textContent = msg;
+    document.getElementById('loadingOverlay').classList.toggle('show', show);
+  }
+
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `show ${type}`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.className = '', 3000);
+  }
+
+  function showError(id, msg) {
+    document.getElementById(id).classList.add('show');
+    document.getElementById(id.replace('Error', 'ErrorMsg')).textContent = msg;
+  }
+  function hideError(id) { document.getElementById(id).classList.remove('show'); }
+
+  // ══════════════════════════════════════════
+  // API
+  // ══════════════════════════════════════════
+  // সব request GET দিয়ে — CORS সমস্যা এড়ানো
+  async function apiGet(params) {
+    const url = new URL(APPS_SCRIPT_URL);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    const res = await fetch(url.toString(), { redirect: 'follow' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    return JSON.parse(text);
+  }
+
+  // ══════════════════════════════════════════
+  // LOGIN
+  // ══════════════════════════════════════════
+  // Enter key support
+  document.addEventListener('DOMContentLoaded', () => {
+    ['inputId', 'inputPass'].forEach(id => {
+      document.getElementById(id)?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') handleLogin();
+      });
+    });
+
+    // Month badge
+    const now = new Date();
+    document.getElementById('monthBadge').textContent =
+      '📅 ' + now.toLocaleString('bn-BD', { month: 'long', year: 'numeric' });
+
+    // Try restore session
+    try {
+      const saved = sessionStorage.getItem('retailer');
+      if (saved) {
+        const r = JSON.parse(saved);
+        loadDashboard(r);
+        fetchStatus(r.retailer_id);
+      }
+    } catch {}
+  });
+
+  async function handleLogin() {
+    hideError('loginError');
+    const id = document.getElementById('inputId').value.trim();
+    const pass = document.getElementById('inputPass').value.trim();
+
+    if (!id || !pass) {
+      showError('loginError', 'আইডি ও পাসওয়ার্ড দিন');
+      return;
+    }
+
+    setLoading(true, 'লগইন হচ্ছে...');
+    try {
+      const data = await apiGet({ action: 'login', retailer_id: id, password: pass });
+      if (data.success) {
+        currentRetailer = data.retailer;
+        try { sessionStorage.setItem('retailer', JSON.stringify(data.retailer)); } catch {}
+        loadDashboard(data.retailer);
+        fetchStatus(data.retailer.retailer_id);
+        showToast('লগইন সফল হয়েছে ✓');
+      } else {
+        showError('loginError', data.message || 'লগইন ব্যর্থ হয়েছে');
+      }
+    } catch {
+      showError('loginError', 'সার্ভার কানেকশন সমস্যা। পরে চেষ্টা করুন।');
+    }
+    setLoading(false);
+  }
+
+  // ══════════════════════════════════════════
+  // DASHBOARD
+  // ══════════════════════════════════════════
+  function loadDashboard(retailer) {
+    currentRetailer = retailer;
+    document.getElementById('dashName').textContent = retailer.name;
+    document.getElementById('dashId').textContent = 'ID: ' + retailer.retailer_id;
+
+    // G column — শিরোনাম banner
+    const ann = document.getElementById('dashAnnounce');
+    if (retailer.announce) {
+      ann.textContent = retailer.announce;
+      ann.style.display = 'block';
+    } else {
+      ann.style.display = 'none';
+    }
+
+    // Brand select in submit (F column = brands)
+    const sel = document.getElementById('selectBrand');
+    sel.innerHTML = retailer.brands.map(b =>
+      `<option value="${b}">${b}</option>`
+    ).join('');
+    // ব্র্যান্ড যতটাই হোক dropdown সবসময় দেখাবে
+    document.getElementById('brandGroup').style.display = 'block';
+
+    // F column — এই মাসের brand message (info box)
+    const bm = document.getElementById('brandMessage');
+    if (retailer.fieldLabel) {
+      bm.innerHTML = '📢 ' + retailer.fieldLabel;
+      bm.style.display = 'block';
+    } else {
+      bm.style.display = 'none';
+    }
+
+    updateRing(0, retailer.target);
+    showScreen('dashScreen');
+  }
+
+  function updateRing(count, target) {
+    currentCount = count;
+    const circumference = 2 * Math.PI * 68; // r=68
+    const progress = target > 0 ? Math.min(count / target, 1) : 0;
+    const pct = Math.round(progress * 100);
+    const offset = circumference - progress * circumference;
+
+    const color = pct >= 100 ? '#10b981' : pct >= 60 ? '#f59e0b' : '#1a56db';
+    const remaining = Math.max(target - count, 0);
+
+    const ring = document.getElementById('ringFill');
+    ring.style.strokeDashoffset = offset;
+    ring.style.stroke = color;
+
+    document.getElementById('ringCount').textContent = count;
+    document.getElementById('ringCount').style.color = color;
+    document.getElementById('ringTotal').textContent = '/ ' + target;
+    document.getElementById('ringPct').textContent = pct + '%';
+    document.getElementById('statSubmitted').textContent = count;
+    document.getElementById('statRemaining').textContent = remaining;
+    document.getElementById('statRemaining').style.color =
+      remaining === 0 ? 'var(--success)' : 'var(--warning)';
+
+    const achieved = document.getElementById('targetAchieved');
+    if (pct >= 100) achieved.classList.add('show');
+    else achieved.classList.remove('show');
+  }
+
+  async function fetchStatus(retailerId) {
+    try {
+      const data = await apiGet({ action: 'getStatus', retailer_id: retailerId });
+      if (data.success && currentRetailer) {
+        updateRing(data.data.submittedCount, currentRetailer.target);
+      }
+    } catch {}
+  }
+
+  async function handleRefresh() {
+    if (!currentRetailer) return;
+    const btn = document.getElementById('refreshBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner spinner-dark"></div> আপডেট হচ্ছে...';
+    await fetchStatus(currentRetailer.retailer_id);
+    btn.disabled = false;
+    btn.innerHTML = '🔄 স্ট্যাটাস রিফ্রেশ করুন';
+    showToast('স্ট্যাটাস আপডেট হয়েছে ✓');
+  }
+
+  function handleLogout() {
+    try { sessionStorage.removeItem('retailer'); } catch {}
+    currentRetailer = null;
+    currentCount = 0;
+    document.getElementById('inputId').value = '';
+    document.getElementById('inputPass').value = '';
+    hideError('loginError');
+    showScreen('loginScreen');
+    showToast('লগআউট সফল হয়েছে');
+  }
+
+  // ══════════════════════════════════════════
+  // SUBMIT
+  // ══════════════════════════════════════════
+  async function handleSubmit() {
+    hideError('submitError');
+    if (!currentRetailer) return;
+
+    const phone = document.getElementById('inputPhone').value.trim();
+    const brand = document.getElementById('selectBrand').value;
+
+    if (phone.length !== 11 || !phone.startsWith('01')) {
+      showError('submitError', 'সঠিক 11 সংখ্যার নম্বর দিন (01 দিয়ে শুরু)');
+      return;
+    }
+    if (!brand) {
+      showError('submitError', 'ব্র্যান্ড সিলেক্ট করুন');
+      return;
+    }
+
+    setLoading(true, 'জমা হচ্ছে...');
+    try {
+      const data = await apiGet({
+        action: 'submitNumber',
+        retailer_id: currentRetailer.retailer_id,
+        phone_number: phone,
+        brand: brand
+      });
+      if (data.success) {
+        showToast('✅ সফলভাবে জমা হয়েছে!');
+        document.getElementById('inputPhone').value = '';
+
+        showDash();
+        fetchStatus(currentRetailer.retailer_id);
+      } else {
+        showError('submitError', data.message || 'জমা ব্যর্থ হয়েছে');
+      }
+    } catch {
+      showError('submitError', 'সার্ভার কানেকশন সমস্যা');
+    }
+    setLoading(false);
+  }
+</script>
+</body>
+</html>
