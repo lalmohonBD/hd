@@ -456,16 +456,16 @@
   <div class="submit-content">
     <div class="card fade-up">
       <div class="form-group">
-        <label class="form-label">📱 মোবাইল নম্বর (প্রাপ্ত বয়স্ক হতে হবে ১৮+)</label>
+        <label class="form-label">📱 মোবাইল নম্বর</label>
         <input id="inputPhone" class="form-input" type="tel" placeholder="01XXXXXXXXX"
           maxlength="11" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')" />
-        <p class="hint-text">11 সংখ্যার বাংলাদেশি নম্বর (01 দিয়ে শুরু)</p>
+        <p class="hint-text">১১ সংখ্যার বাংলাদেশি নম্বর (01 দিয়ে শুরু)</p>
       </div>
 
       <div id="brandMessage" style="display:none;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:0.7rem 1rem;margin-bottom:0.75rem;color:#1d4ed8;font-size:0.88rem;font-weight:600;line-height:1.5;"></div>
 
       <div class="form-group" id="brandGroup">
-        <label class="form-label">🏷️ বর্তমান ভোক্তার ব্রান্ড</label>
+        <label class="form-label">🏷️ ব্র্যান্ড</label>
         <div class="select-wrap">
           <select id="selectBrand" class="form-input"></select>
         </div>
@@ -477,6 +477,17 @@
         <button class="btn btn-success" id="submitBtn" onclick="handleSubmit()" style="padding:1rem; font-size:1.05rem;">
           ✅ জমা দিন
         </button>
+      </div>
+    </div>
+
+    <!-- এই session-এ জমা দেওয়া নম্বরের list -->
+    <div id="submittedListWrap" style="display:none; margin-top:1rem;">
+      <div style="background:white; border-radius:18px; box-shadow:0 2px 12px rgba(30,41,59,0.08); overflow:hidden;">
+        <div style="padding:0.85rem 1.1rem; background:#f0fdf4; border-bottom:1.5px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:700; font-size:0.9rem; color:#065f46;">✅ এই সেশনে জমা হয়েছে</span>
+          <span id="submittedCount" style="background:#10b981; color:white; border-radius:50px; padding:0.2rem 0.65rem; font-size:0.82rem; font-weight:700;">0</span>
+        </div>
+        <ul id="submittedList" style="list-style:none; margin:0; padding:0; max-height:280px; overflow-y:auto;"></ul>
       </div>
     </div>
   </div>
@@ -515,11 +526,34 @@
   }
 
   function showDash() { showScreen('dashScreen'); }
+  let sessionSubmitted = [];
+
   function showSubmit() {
     document.getElementById('submitHeaderName').textContent = currentRetailer?.name || '';
     document.getElementById('inputPhone').value = '';
     hideError('submitError');
+    sessionSubmitted = [];
+    document.getElementById('submittedList').innerHTML = '';
+    document.getElementById('submittedCount').textContent = '0';
+    document.getElementById('submittedListWrap').style.display = 'none';
     showScreen('submitScreen');
+    setTimeout(() => document.getElementById('inputPhone').focus(), 300);
+  }
+
+  function addToSubmittedList(phone, brand) {
+    sessionSubmitted.unshift({ phone, brand });
+    const wrap = document.getElementById('submittedListWrap');
+    const list = document.getElementById('submittedList');
+    document.getElementById('submittedCount').textContent = sessionSubmitted.length;
+    wrap.style.display = 'block';
+
+    // Re-render list
+    list.innerHTML = sessionSubmitted.map((item, i) =>
+      `<li style="display:flex;justify-content:space-between;align-items:center;padding:0.7rem 1.1rem;border-bottom:1px solid #f1f5f9;${i===0?'background:#f0fdf4;':''}">
+        <span style="font-weight:${i===0?'700':'500'};font-size:0.92rem;color:#1e293b;">${item.phone}</span>
+        <span style="background:#eff6ff;color:#1d4ed8;border-radius:50px;padding:0.2rem 0.65rem;font-size:0.78rem;font-weight:600;">${item.brand}</span>
+      </li>`
+    ).join('');
   }
 
   // ══════════════════════════════════════════
@@ -576,7 +610,7 @@
 
     // Try restore session
     try {
-      const saved = sessionStorage.getItem('retailer');
+      const saved = localStorage.getItem('retailer');
       if (saved) {
         const r = JSON.parse(saved);
         loadDashboard(r);
@@ -600,7 +634,7 @@
       const data = await apiGet({ action: 'login', retailer_id: id, password: pass });
       if (data.success) {
         currentRetailer = data.retailer;
-        try { sessionStorage.setItem('retailer', JSON.stringify(data.retailer)); } catch {}
+        try { localStorage.setItem('retailer', JSON.stringify(data.retailer)); } catch {}
         loadDashboard(data.retailer);
         fetchStatus(data.retailer.retailer_id);
         showToast('লগইন সফল হয়েছে ✓');
@@ -700,7 +734,7 @@
   }
 
   function handleLogout() {
-    try { sessionStorage.removeItem('retailer'); } catch {}
+    try { localStorage.removeItem('retailer'); } catch {}
     currentRetailer = null;
     currentCount = 0;
     document.getElementById('inputId').value = '';
@@ -721,7 +755,7 @@
     const brand = document.getElementById('selectBrand').value;
 
     if (phone.length !== 11 || !phone.startsWith('01')) {
-      showError('submitError', 'সঠিক 11 সংখ্যার নম্বর দিন (01 দিয়ে শুরু)');
+      showError('submitError', 'সঠিক ১১ সংখ্যার নম্বর দিন (01 দিয়ে শুরু)');
       return;
     }
     if (!brand) {
@@ -738,10 +772,10 @@
         brand: brand
       });
       if (data.success) {
-        showToast('✅ সফলভাবে জমা হয়েছে!');
+        showToast('✅ ' + phone + ' জমা হয়েছে!');
+        addToSubmittedList(phone, brand);
         document.getElementById('inputPhone').value = '';
-
-        showDash();
+        document.getElementById('inputPhone').focus();
         fetchStatus(currentRetailer.retailer_id);
       } else {
         showError('submitError', data.message || 'জমা ব্যর্থ হয়েছে');
