@@ -391,7 +391,6 @@
       </div>
       <button class="btn btn-ghost" onclick="handleLogout()">লগআউট</button>
     </div>
-    <div id="dashAnnounce" style="display:none;margin-top:0.85rem;background:rgba(255,255,255,0.18);border-radius:12px;padding:0.55rem 1rem;font-size:0.9rem;font-weight:600;color:white;text-align:center;"></div>
   </div>
 
   <div class="dash-content">
@@ -462,7 +461,10 @@
         <p class="hint-text">১১ সংখ্যার বাংলাদেশি নম্বর (01 দিয়ে শুরু)</p>
       </div>
 
-      <div id="brandMessage" style="display:none;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:14px;padding:0.7rem 1rem;margin-bottom:0.75rem;color:#1d4ed8;font-size:0.88rem;font-weight:600;line-height:1.5;"></div>
+      <div class="form-group" id="brandMessageGroup" style="display:none;">
+        <label class="form-label">💬 ব্র্যান্ড বার্তা</label>
+        <div id="brandMessage" style="width:100%;padding:0.8rem 1rem;border:2px solid #bfdbfe;border-radius:14px;font-size:0.92rem;font-weight:600;color:#1d4ed8;background:#eff6ff;line-height:1.5;"></div>
+      </div>
 
       <div class="form-group" id="brandGroup">
         <label class="form-label">🏷️ ব্র্যান্ড</label>
@@ -508,7 +510,7 @@
   // ══════════════════════════════════════════
   // CONFIG — আপনার Apps Script URL এখানে দিন
   // ══════════════════════════════════════════
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHdB6XP5--JHDNvuMHqc1UT-qXEH8MH60HXD4Tp3gtNd5caZeXuqciXMKovGq_Ocm4/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzv83V16n2svaAMuGuMumDQ18EsfQ6zUcIuGkXyOXFijdEmWsHPxMkyPdYZCtO8HFc/exec';
 
   // ══════════════════════════════════════════
   // STATE
@@ -582,14 +584,37 @@
   // ══════════════════════════════════════════
   // API
   // ══════════════════════════════════════════
-  // সব request GET দিয়ে — CORS সমস্যা এড়ানো
   async function apiGet(params) {
     const url = new URL(APPS_SCRIPT_URL);
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-    const res = await fetch(url.toString(), { redirect: 'follow' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    return JSON.parse(text);
+    
+    // GAS JSONP call — CORS সমস্যা সম্পূর্ণ এড়ানো
+    return new Promise((resolve, reject) => {
+      const cbName = 'cb_' + Date.now();
+      const script = document.createElement('script');
+      const timer = setTimeout(() => {
+        delete window[cbName];
+        script.remove();
+        reject(new Error('Timeout — GAS সাড়া দেয়নি'));
+      }, 15000);
+
+      window[cbName] = function(data) {
+        clearTimeout(timer);
+        delete window[cbName];
+        script.remove();
+        resolve(data);
+      };
+
+      url.searchParams.set('callback', cbName);
+      script.src = url.toString();
+      script.onerror = () => {
+        clearTimeout(timer);
+        delete window[cbName];
+        script.remove();
+        reject(new Error('Script load failed'));
+      };
+      document.head.appendChild(script);
+    });
   }
 
   // ══════════════════════════════════════════
@@ -608,13 +633,27 @@
     document.getElementById('monthBadge').textContent =
       '📅 ' + now.toLocaleString('bn-BD', { month: 'long', year: 'numeric' });
 
-    // Try restore session
+    // Auto-login: credentials থেকে fresh server data নাও
     try {
-      const saved = localStorage.getItem('retailer');
-      if (saved) {
-        const r = JSON.parse(saved);
-        loadDashboard(r);
-        fetchStatus(r.retailer_id);
+      const rid = localStorage.getItem('r_id');
+      const rpass = localStorage.getItem('r_pass');
+      if (rid && rpass) {
+        setLoading(true, 'লোড হচ্ছে...');
+        apiGet({ action: 'login', retailer_id: rid, password: rpass })
+          .then(data => {
+            setLoading(false);
+            if (data.success) {
+              loadDashboard(data.retailer);
+              fetchStatus(data.retailer.retailer_id);
+            } else {
+              // credentials invalid হলে clear করো
+              localStorage.removeItem('r_id');
+              localStorage.removeItem('r_pass');
+            }
+          }).catch((err) => { 
+            console.error('Auto-login error:', err.message);
+            setLoading(false); 
+          });
       }
     } catch {}
   });
@@ -634,15 +673,25 @@
       const data = await apiGet({ action: 'login', retailer_id: id, password: pass });
       if (data.success) {
         currentRetailer = data.retailer;
-        try { localStorage.setItem('retailer', JSON.stringify(data.retailer)); } catch {}
+        try { 
+          localStorage.setItem('r_id', data.retailer.retailer_id);
+          localStorage.setItem('r_pass', pass); // pass variable — already trimmed above
+        } catch {}
         loadDashboard(data.retailer);
         fetchStatus(data.retailer.retailer_id);
         showToast('লগইন সফল হয়েছে ✓');
       } else {
         showError('loginError', data.message || 'লগইন ব্যর্থ হয়েছে');
       }
-    } catch {
-      showError('loginError', 'সার্ভার কানেকশন সমস্যা। পরে চেষ্টা করুন।');
+    } catch (err) {
+      const msg = err.message || '';
+      if (msg.includes('GAS_NOT_JSON')) {
+        showError('loginError', 'Apps Script URL ভুল বা Deploy করা হয়নি। নতুন Deployment দিন।');
+      } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+        showError('loginError', 'ইন্টারনেট কানেকশন চেক করুন।');
+      } else {
+        showError('loginError', 'Error: ' + msg);
+      }
     }
     setLoading(false);
   }
@@ -655,13 +704,16 @@
     document.getElementById('dashName').textContent = retailer.name;
     document.getElementById('dashId').textContent = 'ID: ' + retailer.retailer_id;
 
-    // G column — শিরোনাম banner
+    // G column — শিরোনাম card
     const ann = document.getElementById('dashAnnounce');
-    if (retailer.announce) {
-      ann.textContent = retailer.announce;
-      ann.style.display = 'block';
-    } else {
-      ann.style.display = 'none';
+    const annText = document.getElementById('dashAnnounceText');
+    if (ann && annText) {
+      if (retailer.announce) {
+        annText.textContent = retailer.announce;
+        ann.style.display = 'block';
+      } else {
+        ann.style.display = 'none';
+      }
     }
 
     // Brand select in submit (F column = brands)
@@ -672,13 +724,16 @@
     // ব্র্যান্ড যতটাই হোক dropdown সবসময় দেখাবে
     document.getElementById('brandGroup').style.display = 'block';
 
-    // F column — এই মাসের brand message (info box)
+    // F column — এই মাসের brand message
+    const bmg = document.getElementById('brandMessageGroup');
     const bm = document.getElementById('brandMessage');
-    if (retailer.fieldLabel) {
-      bm.innerHTML = '📢 ' + retailer.fieldLabel;
-      bm.style.display = 'block';
-    } else {
-      bm.style.display = 'none';
+    if (bmg && bm) {
+      if (retailer.fieldLabel) {
+        bm.textContent = retailer.fieldLabel;
+        bmg.style.display = 'block';
+      } else {
+        bmg.style.display = 'none';
+      }
     }
 
     updateRing(0, retailer.target);
@@ -696,21 +751,17 @@
     const remaining = Math.max(target - count, 0);
 
     const ring = document.getElementById('ringFill');
+    if (!ring) return;
     ring.style.strokeDashoffset = offset;
     ring.style.stroke = color;
 
-    document.getElementById('ringCount').textContent = count;
-    document.getElementById('ringCount').style.color = color;
-    document.getElementById('ringTotal').textContent = '/ ' + target;
-    document.getElementById('ringPct').textContent = pct + '%';
-    document.getElementById('statSubmitted').textContent = count;
-    document.getElementById('statRemaining').textContent = remaining;
-    document.getElementById('statRemaining').style.color =
-      remaining === 0 ? 'var(--success)' : 'var(--warning)';
-
-    const achieved = document.getElementById('targetAchieved');
-    if (pct >= 100) achieved.classList.add('show');
-    else achieved.classList.remove('show');
+    const safe = (id, fn) => { const el = document.getElementById(id); if(el) fn(el); };
+    safe('ringCount', el => { el.textContent = count; el.style.color = color; });
+    safe('ringTotal', el => el.textContent = '/ ' + target);
+    safe('ringPct', el => el.textContent = pct + '%');
+    safe('statSubmitted', el => el.textContent = count);
+    safe('statRemaining', el => { el.textContent = remaining; el.style.color = remaining === 0 ? 'var(--success)' : 'var(--warning)'; });
+    safe('targetAchieved', el => pct >= 100 ? el.classList.add('show') : el.classList.remove('show'));
   }
 
   async function fetchStatus(retailerId) {
@@ -734,7 +785,7 @@
   }
 
   function handleLogout() {
-    try { localStorage.removeItem('retailer'); } catch {}
+    try { localStorage.removeItem('r_id'); localStorage.removeItem('r_pass'); } catch {}
     currentRetailer = null;
     currentCount = 0;
     document.getElementById('inputId').value = '';
@@ -780,8 +831,13 @@
       } else {
         showError('submitError', data.message || 'জমা ব্যর্থ হয়েছে');
       }
-    } catch {
-      showError('submitError', 'সার্ভার কানেকশন সমস্যা');
+    } catch (err) {
+      const msg = err.message || '';
+      if (msg.includes('GAS_NOT_JSON')) {
+        showError('submitError', 'Apps Script Deploy সমস্যা। নতুন Deployment দিন।');
+      } else {
+        showError('submitError', 'কানেকশন সমস্যা: ' + msg);
+      }
     }
     setLoading(false);
   }
