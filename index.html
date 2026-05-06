@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>রিটেইলার পোর্টাল</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -517,9 +520,38 @@
 
 <script>
   // ══════════════════════════════════════════
-  // CONFIG — আপনার Apps Script URL এখানে দিন
+  // CONFIG
   // ══════════════════════════════════════════
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzv83V16n2svaAMuGuMumDQ18EsfQ6zUcIuGkXyOXFijdEmWsHPxMkyPdYZCtO8HFc/exec';
+
+  // ── VERSION: HTML update করলে এই number বাড়ান (যেমন: "1.0.1", "1.0.2") ──
+  const APP_VERSION = "1.0.0";
+
+  // ── Smart version check: credentials রেখে শুধু page reload করে ──
+  (function checkVersion() {
+    try {
+      const savedVer = localStorage.getItem('app_version');
+      if (savedVer !== APP_VERSION) {
+        // credentials আলাদা সেভ করো
+        const rid   = localStorage.getItem('r_id');
+        const rpass = localStorage.getItem('r_pass');
+
+        // শুধু version-related cache clear করো, credentials না
+        const keysToKeep = { r_id: rid, r_pass: rpass, app_version: APP_VERSION };
+        localStorage.clear();
+        Object.entries(keysToKeep).forEach(([k, v]) => {
+          if (v) localStorage.setItem(k, v);
+        });
+
+        // Cache bust করে reload — login যাবে না
+        const url = location.href.split('?')[0];
+        const newUrl = url + '?v=' + APP_VERSION;
+        if (location.href !== newUrl) {
+          location.replace(newUrl);
+        }
+      }
+    } catch {}
+  })();
 
   // ══════════════════════════════════════════
   // STATE
