@@ -18,161 +18,249 @@
             --green: #0d9f6e; --green-light: #e6f9f2;
             --red: #e53935; --red-light: #fdecea;
             --amber-light: #fffbeb;
-            --card: #ffffff; --border: #e2e8f0;
+            --card: #ffffff; --border: #e2e8f0; --surface: #f4f6fb;
             --text: #1e293b; --text-2: #475569; --text-3: #94a3b8;
-            --radius: 16px; --radius-sm: 10px;
+            --radius: 14px; --radius-sm: 10px;
+            --topbar: 58px;
+            --bottomnav: 64px;
         }
-        body { font-family: 'Hind Siliguri', sans-serif; background: #f4f6fb; min-height: 100vh; color: var(--text); }
+        html, body {
+            height: 100%; width: 100%;
+            font-family: 'Hind Siliguri', sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            overflow: hidden;
+        }
         .hidden { display: none !important; }
 
-        /* LOADING */
+        /* ── LOADING ── */
         #loadingScreen {
             position: fixed; inset: 0; z-index: 9999;
-            background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 45%, #fef9f0 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
-            transition: opacity 0.25s;
+            background: linear-gradient(135deg,#dbeafe 0%,#eff6ff 45%,#fef9f0 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 16px;
+            transition: opacity 0.3s;
         }
-        .spinner { width: 44px; height: 44px; border: 4px solid #bfdbfe; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .home-icon-box {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg,#3b82f6,#2563eb);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 24px rgba(37,99,235,0.30);
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid #bfdbfe; border-top-color: #2563eb;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* LOGIN */
+        /* ── LOGIN PAGE ── */
         #loginPage {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 45%, #fef9f0 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px;
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg,#dbeafe 0%,#eff6ff 45%,#fef9f0 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 24px 20px; overflow-y: auto;
         }
-        .login-outer { width: 100%; max-width: 400px; }
-        .login-brand { text-align: center; margin-bottom: 28px; }
-        .home-icon {
-            width: 72px; height: 72px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 16px; box-shadow: 0 8px 24px rgba(37,99,235,0.30);
-        }
-        .login-brand h1 { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-        .login-brand p { font-size: 14px; color: var(--text-3); }
-        .login-card { background: #fff; border-radius: 20px; box-shadow: 0 8px 32px rgba(30,41,59,0.10); padding: 28px 24px; }
+        .login-outer { width: 100%; max-width: 390px; }
+        .login-brand { text-align: center; margin-bottom: 24px; }
+        .login-brand h1 { font-size: 24px; font-weight: 700; color: var(--text); margin: 12px 0 4px; }
+        .login-brand p { font-size: 13px; color: var(--text-3); }
+        .login-card { background:#fff; border-radius:20px; box-shadow:0 8px 32px rgba(30,41,59,0.10); padding:24px 20px; }
+        .login-footer { text-align:center; font-size:11px; color:var(--text-3); margin-top:16px; }
 
-        /* FORM */
-        .field { margin-bottom: 14px; }
-        .field label { display: block; font-size: 14px; font-weight: 600; color: var(--text-2); margin-bottom: 8px; }
+        /* ── SHARED INPUTS ── */
+        .field { margin-bottom: 12px; }
+        .field label { display:block; font-size:13px; font-weight:600; color:var(--text-2); margin-bottom:6px; }
         .inp {
-            width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-            font-size: 15px; font-family: inherit; color: var(--text); background: #f8fafc; outline: none;
-            transition: border 0.2s, box-shadow 0.2s; -webkit-appearance: none;
+            width:100%; padding:12px 14px;
+            border:1.5px solid var(--border); border-radius:var(--radius-sm);
+            font-size:15px; font-family:inherit; color:var(--text);
+            background:#f8fafc; outline:none;
+            transition:border 0.2s, box-shadow 0.2s; -webkit-appearance:none;
         }
-        .inp:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
-        select.inp { cursor: pointer; }
-        .btn-login {
-            width: 100%; padding: 14px; background: var(--blue); color: #fff; border: none;
-            border-radius: 12px; font-size: 17px; font-weight: 700; font-family: inherit;
-            cursor: pointer; margin-top: 6px; transition: background 0.2s, transform 0.15s;
+        .inp:focus { border-color:var(--blue); background:#fff; box-shadow:0 0 0 3px rgba(37,99,235,0.12); }
+        select.inp { cursor:pointer; }
+        .btn-primary {
+            width:100%; padding:13px; background:var(--blue); color:#fff; border:none;
+            border-radius:12px; font-size:16px; font-weight:700; font-family:inherit;
+            cursor:pointer; transition:background 0.2s, transform 0.15s;
         }
-        .btn-login:hover:not(:disabled) { background: var(--blue-dark); }
-        .btn-login:disabled { background: #93c5fd; cursor: not-allowed; }
+        .btn-primary:hover:not(:disabled) { background:var(--blue-dark); }
+        .btn-primary:active { transform:scale(0.98); }
+        .btn-primary:disabled { background:#93c5fd; cursor:not-allowed; transform:none; }
 
-        /* ERROR */
+        /* ── ERROR BOX ── */
         .error-box {
-            display: none; background: var(--red-light); border: 1px solid #fca5a5;
-            border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px;
-            color: var(--red); margin-bottom: 12px; font-weight: 600; align-items: center; gap: 8px;
+            display:none; background:var(--red-light); border:1px solid #fca5a5;
+            border-radius:var(--radius-sm); padding:9px 12px;
+            font-size:13px; color:var(--red); margin-bottom:10px;
+            font-weight:600; align-items:center; gap:8px;
         }
-        .error-box.show { display: flex; }
+        .error-box.show { display:flex; }
 
-        /* DASHBOARD */
-        #dashPage { min-height: 100vh; display: flex; flex-direction: column; }
+        /* ── DASHBOARD LAYOUT ── */
+        #dashPage {
+            position: fixed; inset: 0;
+            display: flex; flex-direction: column;
+        }
+
+        /* TOPBAR */
         .topbar {
-            background: var(--blue); padding: 16px 18px 14px;
+            height: var(--topbar);
+            background: var(--blue);
+            padding: 0 16px;
             display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 100;
+            flex-shrink: 0; z-index: 10;
         }
-        .topbar-title { color: #fff; font-size: 17px; font-weight: 700; }
-        .topbar-sub { color: rgba(255,255,255,0.65); font-size: 12px; margin-top: 2px; }
-        .logout-topbar {
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-            color: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
-            padding: 6px 14px; border-radius: 99px; cursor: pointer;
-        }
-        .dash-body { flex: 1; padding: 16px 16px 0; max-width: 440px; width: 100%; margin: 0 auto; }
+        .topbar-title { color:#fff; font-size:16px; font-weight:700; }
+        .topbar-sub { color:rgba(255,255,255,0.65); font-size:11px; margin-top:1px; }
 
-        /* ANNOUNCE */
+        /* PAGE CONTENT */
+        .pages {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        .page {
+            position: absolute; inset: 0;
+            overflow-y: auto;
+            padding: 14px 14px 10px;
+            display: none;
+        }
+        .page.active { display: block; }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            height: var(--bottomnav);
+            background: #fff;
+            border-top: 1px solid var(--border);
+            display: flex; align-items: stretch;
+            flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .nav-btn {
+            flex: 1; border: none; background: transparent;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 3px;
+            cursor: pointer; color: var(--text-3);
+            font-family: inherit; font-size: 11px; font-weight: 600;
+            transition: color 0.2s; position: relative;
+        }
+        .nav-btn svg { width: 22px; height: 22px; }
+        .nav-btn.active { color: var(--blue); }
+        .nav-btn.active::before {
+            content: ''; position: absolute; top: 0; left: 20%; right: 20%;
+            height: 3px; background: var(--blue); border-radius: 0 0 3px 3px;
+        }
+
+        /* ── HOME PAGE ── */
         .announce {
-            background: var(--amber-light); border: 1.5px solid #fde68a; border-radius: var(--radius-sm);
-            padding: 11px 14px; font-size: 13px; font-weight: 600; color: #92400e;
-            display: flex; align-items: flex-start; gap: 8px; margin-bottom: 14px;
+            background: var(--amber-light); border: 1.5px solid #fde68a;
+            border-radius: var(--radius-sm); padding: 10px 12px;
+            font-size: 13px; font-weight: 600; color: #92400e;
+            display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;
         }
+        .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px; }
+        .stat-card {
+            background:var(--card); border:1.5px solid var(--border);
+            border-radius:var(--radius-sm); padding:10px 6px 8px; text-align:center;
+        }
+        .stat-card .num { font-size:24px; font-weight:800; line-height:1; }
+        .stat-card .lbl { font-size:10px; color:var(--text-3); margin-top:3px; font-weight:600; }
+        .s-target .num { color:var(--blue); }
+        .s-done .num { color:var(--green); }
+        .s-rem .num { color:var(--red); }
 
-        /* STATS */
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-        .stat-card { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 8px 10px; text-align: center; }
-        .stat-card .num { font-size: 26px; font-weight: 800; line-height: 1; }
-        .stat-card .lbl { font-size: 11px; color: var(--text-3); margin-top: 4px; font-weight: 500; }
-        .s-target .num { color: var(--blue); }
-        .s-done .num { color: var(--green); }
-        .s-rem .num { color: var(--red); }
+        .progress-wrap { margin-bottom: 12px; }
+        .progress-meta { display:flex; justify-content:space-between; font-size:11px; color:var(--text-3); margin-bottom:5px; font-weight:600; }
+        .progress-bar { height:7px; background:#e2e8f0; border-radius:99px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,var(--green),#34d399); border-radius:99px; transition:width 0.6s ease; }
+        .goal-badge { display:none; background:var(--green-light); border:1px solid #6ee7b7; border-radius:99px; padding:4px 12px; font-size:11px; font-weight:700; color:var(--green); margin-top:6px; text-align:center; }
+        .goal-badge.show { display:block; }
 
-        /* PROGRESS */
-        .progress-wrap { margin-bottom: 16px; }
-        .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-3); margin-bottom: 6px; font-weight: 600; }
-        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), #34d399); border-radius: 99px; transition: width 0.6s ease; }
-        .goal-badge { display: none; background: var(--green-light); border: 1px solid #6ee7b7; border-radius: 99px; padding: 4px 12px; font-size: 12px; font-weight: 700; color: var(--green); margin-top: 8px; text-align: center; }
-        .goal-badge.show { display: block; }
+        .form-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius); padding:14px; }
+        .section-title { font-size:11px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:0.08em; margin:10px 0 8px; }
+        .divider { border:none; border-top:1px solid var(--border); margin:10px 0; }
 
-        /* FORM CARD */
-        .section-title { font-size: 12px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; margin: 16px 0 10px; }
-        .form-card { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: 0 2px 8px rgba(30,41,59,0.06); }
-        .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
-        .btn-submit {
-            width: 100%; padding: 13px; background: var(--blue); color: #fff; border: none;
-            border-radius: var(--radius-sm); font-size: 16px; font-weight: 700; font-family: inherit;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: background 0.2s, transform 0.15s; margin-top: 4px;
+        /* ── HISTORY PAGE ── */
+        .hist-header {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
         }
-        .btn-submit:hover:not(:disabled) { background: var(--blue-dark); }
-        .btn-submit:disabled { background: var(--text-3); cursor: not-allowed; }
+        .hist-title { font-size: 15px; font-weight: 700; }
+        .hist-count { background:var(--blue-light); color:var(--blue); font-size:12px; font-weight:700; padding:3px 10px; border-radius:99px; }
+        .hist-item {
+            background: var(--card); border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm); padding: 12px 14px;
+            margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+        }
+        .hist-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: var(--blue-light); color: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0; font-weight: 700;
+        }
+        .hist-info { flex: 1; min-width: 0; }
+        .hist-phone { font-size: 15px; font-weight: 700; color: var(--text); }
+        .hist-name { font-size: 12px; color: var(--text-2); margin-top: 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .hist-meta { text-align: right; flex-shrink: 0; }
+        .hist-brand { font-size: 12px; font-weight: 700; color: var(--blue); background: var(--blue-light); padding: 2px 8px; border-radius: 99px; }
+        .hist-time { font-size: 10px; color: var(--text-3); margin-top: 4px; }
+        .hist-empty { text-align:center; padding:48px 20px; color:var(--text-3); }
+        .hist-empty .icon { font-size:40px; margin-bottom:12px; }
+        .hist-empty p { font-size:14px; font-weight:600; }
+        .hist-loading { text-align:center; padding:32px; color:var(--text-3); font-size:14px; }
 
-        /* BOTTOM */
-        .session-count { display: inline-block; background: var(--blue-light); border-radius: 99px; padding: 6px 14px; font-size: 12px; font-weight: 700; color: var(--blue); margin-top: 10px; }
-        .btn-refresh {
-            width: 100%; padding: 11px; background: transparent; color: var(--text-2);
-            border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-            font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; margin-top: 10px;
+        /* ── REFRESH PAGE ── */
+        .refresh-card {
+            background: var(--card); border: 1.5px solid var(--border);
+            border-radius: var(--radius); padding: 20px 16px; margin-bottom: 12px;
         }
-        .btn-refresh:hover { background: #f1f5f9; }
-        .btn-refresh:disabled { color: var(--text-3); cursor: not-allowed; }
-        .bottom-bar {
-            max-width: 440px; width: 100%; margin: 16px auto 0;
-            padding: 14px 16px 32px;
-            display: flex; align-items: center; justify-content: space-between;
+        .refresh-card h3 { font-size:14px; font-weight:700; color:var(--text); margin-bottom:4px; }
+        .refresh-card p { font-size:12px; color:var(--text-3); margin-bottom:14px; }
+        .btn-refresh-big {
+            width:100%; padding:13px; background:var(--blue); color:#fff; border:none;
+            border-radius:var(--radius-sm); font-size:15px; font-weight:700; font-family:inherit;
+            cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+            transition:background 0.2s;
         }
-        .version-tag { font-size: 12px; color: var(--text-3); }
-        .version-tag span { color: var(--blue); font-weight: 700; }
-        .btn-logout-bottom {
-            background: transparent; color: var(--red); border: 1.5px solid #fca5a5;
-            border-radius: 99px; font-family: inherit; font-size: 13px; font-weight: 600;
-            padding: 6px 16px; cursor: pointer; transition: background 0.2s;
+        .btn-refresh-big:hover:not(:disabled) { background:var(--blue-dark); }
+        .btn-refresh-big:disabled { background:#93c5fd; cursor:not-allowed; }
+        .refresh-info { background:var(--surface); border-radius:var(--radius-sm); padding:12px; }
+        .refresh-info-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border); font-size:13px; }
+        .refresh-info-row:last-child { border:none; }
+        .refresh-info-row .key { color:var(--text-3); font-weight:600; }
+        .refresh-info-row .val { font-weight:700; color:var(--text); }
+        .session-pill { background:var(--green-light); color:var(--green); font-size:12px; font-weight:700; padding:3px 10px; border-radius:99px; }
+        .logout-area { margin-top:8px; }
+        .btn-logout-red {
+            width:100%; padding:12px; background:transparent; color:var(--red);
+            border:1.5px solid #fca5a5; border-radius:var(--radius-sm);
+            font-size:15px; font-weight:700; font-family:inherit; cursor:pointer;
+            transition:background 0.2s;
         }
-        .btn-logout-bottom:hover { background: var(--red-light); }
+        .btn-logout-red:hover { background:var(--red-light); }
+        .version-label { text-align:center; font-size:11px; color:var(--text-3); margin-top:10px; }
+        .version-label span { color:var(--blue); font-weight:700; }
     </style>
 </head>
 <body>
 
 <!-- LOADING -->
 <div id="loadingScreen">
-    <div style="width:64px;height:64px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(37,99,235,0.30);">
-        <svg viewBox="0 0 24 24" fill="white" width="34" height="34"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <div class="home-icon-box">
+        <svg viewBox="0 0 24 24" fill="white" width="32" height="32"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     </div>
     <div class="spinner"></div>
-    <div style="font-size:14px;color:#64748b;font-weight:600;">লোড হচ্ছে...</div>
+    <div style="font-size:13px;color:#64748b;font-weight:600;">লোড হচ্ছে...</div>
 </div>
 
-<!-- LOGIN -->
+<!-- LOGIN PAGE -->
 <div id="loginPage" class="hidden">
     <div class="login-outer">
         <div class="login-brand">
-            <div class="home-icon">
-                <svg viewBox="0 0 24 24" fill="white" width="36" height="36"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <div class="home-icon-box" style="margin:0 auto;">
+                <svg viewBox="0 0 24 24" fill="white" width="32" height="32"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             </div>
             <h1>রিটেইলার পোর্টাল</h1>
             <p>আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
@@ -187,247 +275,376 @@
                 <label>পাসওয়ার্ড</label>
                 <input class="inp" type="password" id="r_pass" placeholder="পাসওয়ার্ড লিখুন">
             </div>
-            <button class="btn-login" id="loginBtn" onclick="login()">লগইন করুন</button>
+            <button class="btn-primary" id="loginBtn" onclick="login()">লগইন করুন</button>
         </div>
-        <div style="text-align:center;font-size:12px;color:#94a3b8;margin-top:20px;">
-            © ২০২৬ রিটেইলার ম্যানেজমেন্ট সিস্টেম &nbsp;·&nbsp; <span style="color:#2563eb;font-weight:700;">v1.0.6</span>
-        </div>
+        <div class="login-footer">© ২০২৬ রিটেইলার ম্যানেজমেন্ট সিস্টেম · <span style="color:var(--blue);font-weight:700;">v2.0.7</span><br>এই অ্যাপটি শুধুমাত্র নির্দিষ্ট রিটেইলারদের ব্যবহারের জন্য।</div>
     </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- DASHBOARD PAGE -->
 <div id="dashPage" class="hidden">
+
+    <!-- TOP BAR -->
     <div class="topbar">
         <div>
             <div class="topbar-title" id="welcomeName">স্বাগতম</div>
             <div class="topbar-sub" id="retailerIdShow">ID: —</div>
         </div>
-        <button class="logout-topbar" onclick="logout()">লগআউট</button>
+
     </div>
 
-    <div class="dash-body">
-        <div class="announce" style="margin-top:14px;">
-            <span style="font-size:16px;flex-shrink:0;">📣</span>
-            <span id="announceText">স্বাগতম!</span>
-        </div>
+    <!-- PAGES -->
+    <div class="pages">
 
-        <div class="stats-row">
-            <div class="stat-card s-target"><div class="num" id="targetVal">0</div><div class="lbl">টার্গেট</div></div>
-            <div class="stat-card s-done"><div class="num" id="submittedCount">0</div><div class="lbl">জমা হয়েছে</div></div>
-            <div class="stat-card s-rem"><div class="num" id="remainingCount">0</div><div class="lbl">বাকি আছে</div></div>
-        </div>
-
-        <div class="progress-wrap">
-            <div class="progress-meta"><span>অগ্রগতি</span><span id="progressPct">0%</span></div>
-            <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-            <div class="goal-badge" id="goalBadge">🎉 লক্ষ্যমাত্রা অর্জিত!</div>
-        </div>
-
-        <div class="section-title">নতুন নম্বর জমা দিন</div>
-        <div class="form-card">
-            <div class="field">
-                <label id="brandLabel">ব্র্যান্ড নির্বাচন করুন</label>
-                <select class="inp" id="brand_select"></select>
+        <!-- HOME TAB -->
+        <div class="page active" id="tab-home">
+            <div class="announce">
+                <span style="font-size:15px;flex-shrink:0;">📣</span>
+                <span id="announceText">স্বাগতম!</span>
             </div>
-            <hr class="divider">
-            <div class="field">
-                <label>📱 মোবাইল নম্বর</label>
-                <input class="inp" type="tel" id="customer_phone" placeholder="01XXXXXXXXX" maxlength="11">
+
+            <div class="stats-row">
+                <div class="stat-card s-target"><div class="num" id="targetVal">0</div><div class="lbl">টার্গেট</div></div>
+                <div class="stat-card s-done"><div class="num" id="submittedCount">0</div><div class="lbl">জমা হয়েছে</div></div>
+                <div class="stat-card s-rem"><div class="num" id="remainingCount">0</div><div class="lbl">বাকি আছে</div></div>
             </div>
-            <div class="field">
-                <label>ভোক্তার নাম <span style="font-weight:400;color:#94a3b8">(ঐচ্ছিক)</span></label>
-                <input class="inp" type="text" id="consumer_name" placeholder="ভোক্তার নাম লিখুন">
+
+            <div class="progress-wrap">
+                <div class="progress-meta"><span>অগ্রগতি</span><span id="progressPct">0%</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+                <div class="goal-badge" id="goalBadge">🎉 লক্ষ্যমাত্রা অর্জিত!</div>
             </div>
-            <div class="error-box" id="submitError"><span>⚠️</span><span id="submitErrorMsg"></span></div>
-            <button class="btn-submit" id="submitBtn" onclick="submitData()">✅ জমা দিন</button>
+
+            <div class="section-title">নতুন নম্বর জমা দিন</div>
+            <div class="form-card">
+                <div class="field">
+                    <label id="brandLabel">ব্র্যান্ড নির্বাচন করুন</label>
+                    <select class="inp" id="brand_select"></select>
+                </div>
+                <hr class="divider">
+                <div class="field">
+                    <label>📱 মোবাইল নম্বর</label>
+                    <input class="inp" type="tel" id="customer_phone" placeholder="01XXXXXXXXX" maxlength="11">
+                </div>
+                <div class="field" style="margin-bottom:4px;">
+                    <label>ভোক্তার নাম <span style="font-weight:400;color:var(--text-3)">(ঐচ্ছিক)</span></label>
+                    <input class="inp" type="text" id="consumer_name" placeholder="ভোক্তার নাম লিখুন">
+                </div>
+                <div class="error-box" id="submitError"><span>⚠️</span><span id="submitErrorMsg"></span></div>
+                <button class="btn-primary" id="submitBtn" onclick="submitData()" style="margin-top:8px;">✅ জমা দিন</button>
+            </div>
         </div>
 
-        <div style="text-align:center;">
-            <span class="session-count">✅ এই সেশনে জমা হয়েছে <span id="sessionCount">0</span></span>
+        <!-- HISTORY TAB -->
+        <div class="page" id="tab-history">
+            <div class="hist-header">
+                <div class="hist-title">📋 জমার ইতিহাস</div>
+                <div class="hist-count" id="histCount">০ টি</div>
+            </div>
+            <div id="histList">
+                <div class="hist-loading">লোড হচ্ছে...</div>
+            </div>
         </div>
 
-        <button class="btn-refresh" id="refreshBtn" onclick="refreshAll()">🔄 সব রিফ্রেশ করুন</button>
+        <!-- REFRESH TAB -->
+        <div class="page" id="tab-refresh">
+            <div class="refresh-card">
+                <h3>🔄 সব আপডেট করুন</h3>
+                <button class="btn-refresh-big" id="refreshBtn" onclick="refreshAll()">
+                    🔄 এখনই রিফ্রেশ করুন
+                </button>
+            </div>
+
+            <div class="refresh-card">
+                <h3>📊 একাউন্ট তথ্য</h3>
+                <div class="refresh-info" style="margin-top:8px;">
+                    <div class="refresh-info-row">
+                        <span class="key">রিটেইলার আইডি</span>
+                        <span class="val" id="r-id-info">—</span>
+                    </div>
+                    <div class="refresh-info-row">
+                        <span class="key">নাম</span>
+                        <span class="val" id="r-name-info">—</span>
+                    </div>
+                    <div class="refresh-info-row">
+                        <span class="key">মাসিক টার্গেট</span>
+                        <span class="val" id="r-target-info">—</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="refresh-card logout-area">
+                <h3 style="margin-bottom:10px;">অ্যাকাউন্ট</h3>
+                <button class="btn-logout-red" onclick="logout()">🚪 লগআউট করুন</button>
+            </div>
+            <div class="version-label">© ২০২৬ রিটেইলার ম্যানেজমেন্ট সিস্টেম · <span>v2.0.7</span><br>এই অ্যাপটি শুধুমাত্র নির্দিষ্ট রিটেইলারদের ব্যবহারের জন্য।</div>
+        </div>
+
+    </div><!-- /pages -->
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            হোম
+        </button>
+        <button class="nav-btn" id="nav-history" onclick="switchTab('history')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+            ইতিহাস
+        </button>
+        <button class="nav-btn" id="nav-refresh" onclick="switchTab('refresh')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            আরও
+        </button>
     </div>
 
-    <!-- BOTTOM BAR -->
-    <div class="bottom-bar">
-        <div class="version-tag">© ২০২৬ রিটেইলার ম্যানেজমেন্ট সিস্টেম &nbsp;·&nbsp; <span>v1.0.6</span></div>
-        <button class="btn-logout-bottom" onclick="logout()">লগআউট</button>
-    </div>
-</div>
+</div><!-- /dashPage -->
 
 <script>
-    const firebaseConfig = { databaseURL: "https://retailer-app-live-default-rtdb.asia-southeast1.firebasedatabase.app/" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+const firebaseConfig = { databaseURL: "https://retailer-app-live-default-rtdb.asia-southeast1.firebasedatabase.app/" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-    let user = null, sessionSubmits = 0, submissionListener = null;
+let user = null, sessionSubmits = 0, submissionListener = null;
+let currentTab = 'home';
 
-    function hideLoading() {
-        const el = document.getElementById('loadingScreen');
-        if (!el) return;
-        el.style.opacity = '0';
-        setTimeout(() => el.remove(), 250);
-    }
+// ── LOADING ──
+function hideLoading() {
+    const el = document.getElementById('loadingScreen');
+    if (!el) return;
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 280);
+}
 
-    function show(id) {
-        ['loginPage','dashPage'].forEach(p => document.getElementById(p).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
+// ── PAGE SHOW ──
+function show(id) {
+    ['loginPage','dashPage'].forEach(p => document.getElementById(p).classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+}
 
-    function showError(boxId, msgId, msg) {
-        const box = document.getElementById(boxId);
-        document.getElementById(msgId).innerText = msg;
-        box.classList.add('show');
-        setTimeout(() => box.classList.remove('show'), 4000);
-    }
+function showError(boxId, msgId, msg) {
+    const box = document.getElementById(boxId);
+    document.getElementById(msgId).innerText = msg;
+    box.classList.add('show');
+    setTimeout(() => box.classList.remove('show'), 4000);
+}
 
-    window.onload = () => {
-        const saved = localStorage.getItem('retailerLogin');
-        if (saved) {
-            try {
-                const c = JSON.parse(saved);
-                fetchFreshAndShow(c.id, c.password);
-            } catch(e) { localStorage.removeItem('retailerLogin'); hideLoading(); show('loginPage'); }
-        } else { hideLoading(); show('loginPage'); }
-    };
+// ── BOTTOM NAV ──
+function switchTab(tab) {
+    ['home','history','refresh'].forEach(t => {
+        document.getElementById('tab-' + t).classList.remove('active');
+        document.getElementById('nav-' + t).classList.remove('active');
+    });
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('nav-' + tab).classList.add('active');
+    currentTab = tab;
+    if (tab === 'history') loadHistory();
+    if (tab === 'refresh') updateRefreshInfo();
+}
 
-    function fetchFreshAndShow(id, password) {
-        db.ref('retailers/' + id).once('value').then(snap => {
-            const data = snap.val();
-            if (data && String(data.password) === String(password)) {
-                user = { ...data, id };
-                hideLoading(); showDashboard();
-            } else {
-                localStorage.removeItem('retailerLogin');
-                hideLoading(); show('loginPage');
-            }
-        }).catch(() => { hideLoading(); show('loginPage'); });
-    }
-
-    function login() {
-        const id = document.getElementById('r_id').value.trim();
-        const pass = document.getElementById('r_pass').value.trim();
-        if (!id || !pass) return showError('loginError','loginErrorMsg','আইডি এবং পাসওয়ার্ড দিন');
-        const btn = document.getElementById('loginBtn');
-        btn.disabled = true; btn.innerText = '⏳ যাচাই করা হচ্ছে...';
-        db.ref('retailers/' + id).once('value').then(snap => {
-            const data = snap.val();
-            if (data && String(data.password) === String(pass)) {
-                user = { ...data, id };
-                localStorage.setItem('retailerLogin', JSON.stringify({ id, password: pass }));
-                showDashboard();
-            } else {
-                showError('loginError','loginErrorMsg','ভুল আইডি বা পাসওয়ার্ড।');
-                btn.disabled = false; btn.innerText = 'লগইন করুন';
-            }
-        }).catch(err => {
-            showError('loginError','loginErrorMsg','সংযোগ ত্রুটি: ' + err.message);
-            btn.disabled = false; btn.innerText = 'লগইন করুন';
-        });
-    }
-
-    function showDashboard() {
-        show('dashPage');
-        renderUI();
-        // Fresh fetch from Firebase
-        db.ref('retailers/' + user.id).once('value').then(snap => {
-            const fresh = snap.val();
-            if (fresh) { user = { ...fresh, id: user.id }; renderUI(); }
-        });
-        startRealtimeCounter();
-    }
-
-    function renderUI() {
-        document.getElementById('welcomeName').innerText = user.name || user.id;
-        document.getElementById('retailerIdShow').innerText = 'ID: ' + user.id;
-        document.getElementById('announceText').innerText = user.announce || 'স্বাগতম!';
-        document.getElementById('targetVal').innerText = user.target || 0;
-        document.getElementById('brandLabel').innerText = user.fieldLabel || 'ব্র্যান্ড নির্বাচন করুন';
-        const select = document.getElementById('brand_select');
-        const prev = select.value;
-        select.innerHTML = '<option value="">নির্বাচন করুন</option>';
-        if (user.brands) {
-            user.brands.split(',').forEach(b => {
-                const opt = document.createElement('option');
-                opt.value = b.trim(); opt.innerText = b.trim();
-                select.appendChild(opt);
-            });
-        }
-        if (prev) select.value = prev;
-    }
-
-    function startRealtimeCounter() {
-        if (submissionListener) db.ref('submissions/' + user.id + '/' + getMY()).off('value', submissionListener);
-        submissionListener = db.ref('submissions/' + user.id + '/' + getMY()).on('value', snap => updateStats(snap.numChildren()));
-    }
-
-    function updateStats(count) {
-        const target = parseInt(user.target) || 0;
-        document.getElementById('submittedCount').innerText = count;
-        document.getElementById('remainingCount').innerText = Math.max(0, target - count);
-        const pct = target > 0 ? Math.min(100, Math.round((count / target) * 100)) : 0;
-        document.getElementById('progressFill').style.width = pct + '%';
-        document.getElementById('progressPct').innerText = pct + '%';
-        const badge = document.getElementById('goalBadge');
-        if (target > 0 && count >= target) badge.classList.add('show');
-        else badge.classList.remove('show');
-    }
-
-    function refreshAll() {
-        const btn = document.getElementById('refreshBtn');
-        btn.disabled = true; btn.innerText = '⏳ রিফ্রেশ হচ্ছে...';
-        Promise.all([
-            db.ref('retailers/' + user.id).once('value'),
-            db.ref('submissions/' + user.id + '/' + getMY()).once('value')
-        ]).then(([rSnap, sSnap]) => {
-            const fresh = rSnap.val();
-            if (fresh) { user = { ...fresh, id: user.id }; renderUI(); }
-            updateStats(sSnap.numChildren());
-            btn.disabled = false; btn.innerText = '🔄 সব রিফ্রেশ করুন';
-        }).catch(() => { btn.disabled = false; btn.innerText = '🔄 সব রিফ্রেশ করুন'; });
-    }
-
-    async function submitData() {
-        const phone = document.getElementById('customer_phone').value.trim();
-        const brand = document.getElementById('brand_select').value;
-        const name = document.getElementById('consumer_name').value.trim();
-        const my = getMY();
-        if (phone.length < 11 || !phone.startsWith('01'))
-            return showError('submitError','submitErrorMsg','সঠিক ১১ সংখ্যার নম্বর দিন (01 দিয়ে শুরু)');
-        if (!brand) return showError('submitError','submitErrorMsg','ব্র্যান্ড নির্বাচন করুন');
-        const btn = document.getElementById('submitBtn');
-        btn.disabled = true; btn.innerText = '⏳ যাচাই করা হচ্ছে...';
+// ── AUTO LOGIN ──
+window.onload = () => {
+    const saved = localStorage.getItem('retailerLogin');
+    if (saved) {
         try {
-            const allSnap = await db.ref('submissions').once('value');
-            const allData = allSnap.val();
-            let isDuplicate = false;
-            if (allData) {
-                outer: for (let rID in allData) {
-                    const md = allData[rID][my];
-                    if (md) for (let eid in md) { if (md[eid].phone === phone) { isDuplicate = true; break outer; } }
-                }
-            }
-            if (isDuplicate) {
-                showError('submitError','submitErrorMsg','এই নম্বরটি এই মাসে ইতিমধ্যে জমা করা হয়েছে!');
-                btn.disabled = false; btn.innerText = '✅ জমা দিন'; return;
-            }
-            await db.ref('submissions/' + user.id + '/' + my).push({ phone, brand, consumer_name: name, time: new Date().toLocaleString('bn-BD') });
-            sessionSubmits++;
-            document.getElementById('sessionCount').innerText = sessionSubmits;
-            document.getElementById('customer_phone').value = '';
-            document.getElementById('consumer_name').value = '';
-            btn.innerText = '✅ সফলভাবে জমা হয়েছে!';
-            setTimeout(() => { btn.disabled = false; btn.innerText = '✅ জমা দিন'; }, 2000);
-        } catch(e) {
-            showError('submitError','submitErrorMsg','ত্রুটি: ' + e.message);
-            btn.disabled = false; btn.innerText = '✅ জমা দিন';
-        }
-    }
+            const c = JSON.parse(saved);
+            fetchFreshAndShow(c.id, c.password);
+        } catch(e) { localStorage.removeItem('retailerLogin'); hideLoading(); show('loginPage'); }
+    } else { hideLoading(); show('loginPage'); }
+};
 
-    function getMY() { const d = new Date(); return String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear(); }
-    function logout() { localStorage.removeItem('retailerLogin'); location.reload(); }
-    document.addEventListener('keydown', e => { if (e.key==='Enter' && !document.getElementById('loginPage').classList.contains('hidden')) login(); });
+function fetchFreshAndShow(id, password) {
+    db.ref('retailers/' + id).once('value').then(snap => {
+        const data = snap.val();
+        if (data && String(data.password) === String(password)) {
+            user = { ...data, id };
+            hideLoading(); showDashboard();
+        } else {
+            localStorage.removeItem('retailerLogin');
+            hideLoading(); show('loginPage');
+        }
+    }).catch(() => { hideLoading(); show('loginPage'); });
+}
+
+// ── LOGIN ──
+function login() {
+    const id = document.getElementById('r_id').value.trim();
+    const pass = document.getElementById('r_pass').value.trim();
+    if (!id || !pass) return showError('loginError','loginErrorMsg','আইডি এবং পাসওয়ার্ড দিন');
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true; btn.innerText = '⏳ যাচাই করা হচ্ছে...';
+    db.ref('retailers/' + id).once('value').then(snap => {
+        const data = snap.val();
+        if (data && String(data.password) === String(pass)) {
+            user = { ...data, id };
+            localStorage.setItem('retailerLogin', JSON.stringify({ id, password: pass }));
+            showDashboard();
+        } else {
+            showError('loginError','loginErrorMsg','ভুল আইডি বা পাসওয়ার্ড।');
+            btn.disabled = false; btn.innerText = 'লগইন করুন';
+        }
+    }).catch(err => {
+        showError('loginError','loginErrorMsg','সংযোগ ত্রুটি: ' + err.message);
+        btn.disabled = false; btn.innerText = 'লগইন করুন';
+    });
+}
+
+// ── DASHBOARD ──
+function showDashboard() {
+    show('dashPage');
+    renderUI();
+    db.ref('retailers/' + user.id).once('value').then(snap => {
+        const fresh = snap.val();
+        if (fresh) { user = { ...fresh, id: user.id }; renderUI(); }
+    });
+    startRealtimeCounter();
+}
+
+function renderUI() {
+    document.getElementById('welcomeName').innerText = user.name || user.id;
+    document.getElementById('retailerIdShow').innerText = 'ID: ' + user.id;
+    document.getElementById('announceText').innerText = user.announce || 'স্বাগতম!';
+    document.getElementById('targetVal').innerText = user.target || 0;
+    document.getElementById('brandLabel').innerText = user.fieldLabel || 'ব্র্যান্ড নির্বাচন করুন';
+    const select = document.getElementById('brand_select');
+    const prev = select.value;
+    select.innerHTML = '<option value="">নির্বাচন করুন</option>';
+    if (user.brands) {
+        user.brands.split(',').forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.trim(); opt.innerText = b.trim();
+            select.appendChild(opt);
+        });
+    }
+    if (prev) select.value = prev;
+}
+
+function startRealtimeCounter() {
+    if (submissionListener) db.ref('submissions/' + user.id + '/' + getMY()).off('value', submissionListener);
+    submissionListener = db.ref('submissions/' + user.id + '/' + getMY())
+        .on('value', snap => updateStats(snap.numChildren()));
+}
+
+function updateStats(count) {
+    const target = parseInt(user.target) || 0;
+    document.getElementById('submittedCount').innerText = count;
+    document.getElementById('remainingCount').innerText = Math.max(0, target - count);
+    const pct = target > 0 ? Math.min(100, Math.round((count / target) * 100)) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').innerText = pct + '%';
+    const badge = document.getElementById('goalBadge');
+    if (target > 0 && count >= target) badge.classList.add('show');
+    else badge.classList.remove('show');
+}
+
+function updateSessionUI() {
+    const el = document.getElementById('r-session-info');
+    if (el) el.innerText = sessionSubmits;
+}
+
+// ── HISTORY ──
+function loadHistory() {
+    const list = document.getElementById('histList');
+    list.innerHTML = '<div class="hist-loading">⏳ লোড হচ্ছে...</div>';
+    db.ref('submissions/' + user.id + '/' + getMY()).once('value').then(snap => {
+        const data = snap.val();
+        if (!data) {
+            document.getElementById('histCount').innerText = '০ টি';
+            list.innerHTML = `<div class="hist-empty"><div class="icon">📭</div><p>এই মাসে কোনো এন্ট্রি নেই</p></div>`;
+            return;
+        }
+        const entries = Object.values(data).reverse();
+        document.getElementById('histCount').innerText = entries.length + ' টি';
+        list.innerHTML = entries.map(e => `
+            <div class="hist-item">
+                <div class="hist-avatar">📱</div>
+                <div class="hist-info">
+                    <div class="hist-phone">${e.phone || '—'}</div>
+                    <div class="hist-name">${e.consumer_name || 'নাম নেই'}</div>
+                </div>
+                <div class="hist-meta">
+                    <div class="hist-brand">${e.brand || '—'}</div>
+                    <div class="hist-time">${e.time || ''}</div>
+                </div>
+            </div>
+        `).join('');
+    }).catch(() => {
+        list.innerHTML = '<div class="hist-empty"><div class="icon">⚠️</div><p>লোড করতে সমস্যা হয়েছে</p></div>';
+    });
+}
+
+// ── REFRESH TAB INFO ──
+function updateRefreshInfo() {
+    document.getElementById('r-id-info').innerText = user.id || '—';
+    document.getElementById('r-name-info').innerText = user.name || '—';
+    document.getElementById('r-target-info').innerText = user.target || '—';
+    document.getElementById('r-session-info').innerText = sessionSubmits;
+}
+
+// ── FULL REFRESH ──
+function refreshAll() {
+    const btn = document.getElementById('refreshBtn');
+    btn.disabled = true; btn.innerText = '⏳ রিফ্রেশ হচ্ছে...';
+    Promise.all([
+        db.ref('retailers/' + user.id).once('value'),
+        db.ref('submissions/' + user.id + '/' + getMY()).once('value')
+    ]).then(([rSnap, sSnap]) => {
+        const fresh = rSnap.val();
+        if (fresh) { user = { ...fresh, id: user.id }; renderUI(); }
+        updateStats(sSnap.numChildren());
+        updateRefreshInfo();
+        btn.disabled = false; btn.innerText = '✅ রিফ্রেশ সম্পন্ন!';
+        setTimeout(() => btn.innerText = '🔄 এখনই রিফ্রেশ করুন', 2000);
+    }).catch(() => { btn.disabled = false; btn.innerText = '🔄 এখনই রিফ্রেশ করুন'; });
+}
+
+// ── SUBMIT ──
+async function submitData() {
+    const phone = document.getElementById('customer_phone').value.trim();
+    const brand = document.getElementById('brand_select').value;
+    const name = document.getElementById('consumer_name').value.trim();
+    const my = getMY();
+    if (phone.length < 11 || !phone.startsWith('01'))
+        return showError('submitError','submitErrorMsg','সঠিক ১১ সংখ্যার নম্বর দিন (01 দিয়ে শুরু)');
+    if (!brand) return showError('submitError','submitErrorMsg','ব্র্যান্ড নির্বাচন করুন');
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.innerText = '⏳ যাচাই করা হচ্ছে...';
+    try {
+        const allSnap = await db.ref('submissions').once('value');
+        const allData = allSnap.val();
+        let isDuplicate = false;
+        if (allData) {
+            outer: for (let rID in allData) {
+                const md = allData[rID][my];
+                if (md) for (let eid in md) { if (md[eid].phone === phone) { isDuplicate = true; break outer; } }
+            }
+        }
+        if (isDuplicate) {
+            showError('submitError','submitErrorMsg','এই নম্বরটি এই মাসে ইতিমধ্যে জমা করা হয়েছে!');
+            btn.disabled = false; btn.innerText = '✅ জমা দিন'; return;
+        }
+        await db.ref('submissions/' + user.id + '/' + my).push({
+            phone, brand, consumer_name: name,
+            time: new Date().toLocaleString('bn-BD')
+        });
+        sessionSubmits++;
+        updateSessionUI();
+        document.getElementById('customer_phone').value = '';
+        document.getElementById('consumer_name').value = '';
+        btn.innerText = '✅ সফলভাবে জমা হয়েছে!';
+        setTimeout(() => { btn.disabled = false; btn.innerText = '✅ জমা দিন'; }, 2000);
+    } catch(e) {
+        showError('submitError','submitErrorMsg','ত্রুটি: ' + e.message);
+        btn.disabled = false; btn.innerText = '✅ জমা দিন';
+    }
+}
+
+function getMY() { const d = new Date(); return String(d.getMonth()+1).padStart(2,'0') + '-' + d.getFullYear(); }
+function logout() { localStorage.removeItem('retailerLogin'); location.reload(); }
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !document.getElementById('loginPage').classList.contains('hidden')) login();
+});
 </script>
 </body>
 </html>
