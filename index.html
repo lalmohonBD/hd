@@ -390,7 +390,7 @@
             </button>
         </div>
 
-        <div style="text-align:center;font-size:12px;color:#94a3b8;margin-top:20px;">© ২০২৬ রিটেইলার ম্যানেজমেন্ট সিস্টেম &nbsp;·&nbsp; <span style="color:#3b82f6;font-weight:600;">v1.0.1</span></div>
+        <div style="text-align:center;font-size:12px;color:#94a3b8;margin-top:20px;">© ২০২৬ রিটেইলার ম্যানেজমেন্ট সিস্টেম &nbsp;·&nbsp; <span style="color:#3b82f6;font-weight:600;">v1.0.2</span></div>
     </div>
 </div>
 
@@ -499,13 +499,32 @@
     let sessionSubmits = 0;
     let unsubscribe = null;
 
-    // Auto-login from localStorage
+    // Auto-login — always fetch FRESH data from Firebase (id+pass only stored locally)
     window.onload = () => {
-        const saved = localStorage.getItem('retailerUser');
+        const saved = localStorage.getItem('retailerLogin');
         if (saved) {
-            try { user = JSON.parse(saved); showDashboard(); } catch(e) { localStorage.removeItem('retailerUser'); }
+            try {
+                const cached = JSON.parse(saved);
+                fetchFreshAndShow(cached.id, cached.password);
+            } catch(e) { localStorage.removeItem('retailerLogin'); }
         }
     };
+
+    function fetchFreshAndShow(id, password) {
+        db.ref('retailers/' + id).once('value').then((snap) => {
+            const data = snap.val();
+            if (data && String(data.password) === String(password)) {
+                user = { ...data, id };
+                showDashboard();
+            } else {
+                // User removed or password changed
+                localStorage.removeItem('retailerLogin');
+            }
+        }).catch(() => {
+            // Offline fallback — show dashboard with last known user if available
+            if (user) showDashboard();
+        });
+    }
 
     function showError(id, msgId, msg) {
         const box = document.getElementById(id);
@@ -526,7 +545,7 @@
             const data = snap.val();
             if (data && String(data.password) === String(pass)) {
                 user = { ...data, id };
-                localStorage.setItem('retailerUser', JSON.stringify(user));
+                localStorage.setItem('retailerLogin', JSON.stringify({ id, password: pass }));
                 showDashboard();
             } else {
                 showError('loginError', 'loginErrorMsg', 'ভুল আইডি বা পাসওয়ার্ড। আবার চেষ্টা করুন।');
@@ -541,7 +560,19 @@
     function showDashboard() {
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('dashPage').classList.remove('hidden');
+        renderDashboard();
 
+        // Always re-fetch fresh retailer data from Firebase (brands, target, announce etc.)
+        db.ref('retailers/' + user.id).once('value').then(snap => {
+            const fresh = snap.val();
+            if (fresh) {
+                user = { ...fresh, id: user.id };
+                renderDashboard();
+            }
+        });
+    }
+
+    function renderDashboard() {
         document.getElementById('welcomeName').innerText = user.name || user.id;
         document.getElementById('retailerIdShow').innerText = 'ID: ' + user.id;
         document.getElementById('announceText').innerText = user.announce || 'স্বাগতম!';
@@ -550,6 +581,7 @@
         document.getElementById('brandLabel').innerText = user.fieldLabel || 'ব্র্যান্ড নির্বাচন করুন';
 
         const select = document.getElementById('brand_select');
+        const prevVal = select.value;
         select.innerHTML = '<option value="">নির্বাচন করুন</option>';
         if (user.brands) {
             user.brands.split(',').forEach(b => {
@@ -558,6 +590,8 @@
                 select.appendChild(opt);
             });
         }
+        // Restore previous selection if still valid
+        if (prevVal) select.value = prevVal;
 
         startRealtimeCounter();
     }
@@ -586,8 +620,16 @@
         const btn = event.target;
         btn.disabled = true; btn.innerText = '⏳ রিফ্রেশ হচ্ছে...';
         const my = getMY();
-        db.ref('submissions/' + user.id + '/' + my).once('value').then(snap => {
-            updateStats(snap.numChildren());
+        // Re-fetch both retailer profile (brands/target/announce) AND submission count
+        Promise.all([
+            db.ref('retailers/' + user.id).once('value'),
+            db.ref('submissions/' + user.id + '/' + my).once('value')
+        ]).then(([retailerSnap, subSnap]) => {
+            const fresh = retailerSnap.val();
+            if (fresh) { user = { ...fresh, id: user.id }; renderDashboard(); }
+            updateStats(subSnap.numChildren());
+            btn.disabled = false; btn.innerText = '🔄 স্ট্যাটাস রিফ্রেশ করুন';
+        }).catch(() => {
             btn.disabled = false; btn.innerText = '🔄 স্ট্যাটাস রিফ্রেশ করুন';
         });
     }
@@ -657,7 +699,7 @@
     }
 
     function logout() {
-        localStorage.removeItem('retailerUser');
+        localStorage.removeItem('retailerLogin');
         if (unsubscribe) { db.ref('submissions').off('value', unsubscribe); }
         location.reload();
     }
