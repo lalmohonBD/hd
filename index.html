@@ -243,6 +243,18 @@
         .version-label { text-align:center; font-size:11px; color:var(--text-3); margin-top:10px; }
         .version-label span { color:var(--blue); font-weight:700; }
     </style>
+
+<link rel="manifest" href="/hd/manifest.json">
+<meta name="theme-color" content="#2563eb">
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('/hd/sw.js');
+    });
+  }
+</script>
+
+    
 </head>
 <body>
 
